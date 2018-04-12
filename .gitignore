@@ -1,6 +1,9 @@
 #Added by MacOS
 .DS_Store
 
+#Written HW
+Written/
+
 #Added by compiling tex files
 *.toc
 *.aux
