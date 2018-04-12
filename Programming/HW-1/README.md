@@ -1,6 +1,6 @@
 # Title
 
-Uninformed and Informed Search
+### Uninformed and Informed Search
 
 # Problem
 
