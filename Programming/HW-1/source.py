@@ -144,7 +144,12 @@ def computeNextState(action, state):
 #############################################################
 def successorFN(node):
 	# [chickens, wolves]
-	actions = [[1,0],[0,1],[1,1],[2,0],[0,2]]
+	# 1. Put one chicken in the boat
+	# 2. Put two chickens in the boat
+	# 3. Put one wolf in the boat
+	# 4. Put one wolf and one chicken in the boat
+	# 5. Put two wolves in the boat
+	actions = [[1,0],[2,0], [0,1],[1,1],[0,2]]
 	state = node.state
 
 	actionResultPairs = []
