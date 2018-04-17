@@ -21,19 +21,42 @@ class Node:
 		self.action = action
 
 
-
-
+def printF(f):
+	a = list(f)
+	while a:
+		print a.pop().state
+	print
+	print 
 ##################################################
 #	Attempts to solve the problem using BFS search
+#	Returns True if solution found
+#	Returns False if no solution found
 ##################################################
-def executeBFS(startFO, goalFO, outputFO):
-	pass
+def executeBFS(root, goalState, outputFO):
+	closed = []
+	fringe = []
+	for succ in expand(root):
+		fringe.insert(0, succ)
 
+	while True:
+		# if fringe is empty
+		if not fringe:
+			return False
+		curNode = fringe.pop()
+		if curNode.state == goalState:
+			solution(curNode, outputFO)
+			return True
+		if curNode.state not in closed:
+			global nodesExpanded
+			nodesExpanded += 1
+			closed.append(curNode.state)
+			for succ in expand(curNode):
+				fringe.insert(0, succ)
 
 ##################################################
 #	Attempts to solve the problem using DFS search
 ##################################################
-def executeDFS(startFO, goalFO, outputFO):
+def executeDFS(root, goalState, outputFO):
 	pass
 
 
@@ -41,14 +64,14 @@ def executeDFS(startFO, goalFO, outputFO):
 #	Attempts to solve the problem using Iterative
 # 	Deepening DFS search
 #################################################
-def executeIDDFS(startFO, goalFO, outputFO):
+def executeIDDFS(root, goalState, outputFO):
 	pass
 
 
 #################################################
 #	Attempts to solve the problem using A* search
 #################################################
-def executeASTAR(startFO, goalFO, outputFO):
+def executeASTAR(root, goalState, outputFO):
 	pass
 
 
@@ -63,18 +86,18 @@ def solution(node, outputFO):
 	stack = list()
 	# Backtrack and push steps to stack
 	while curNode:
-		step = ''.join(curNode.state[0]) + ',' + ''.join(curNode.state[1])
+		step = ''.join(str(e) for e in curNode.state[0]) + ',' + ''.join(str(e) for e in curNode.state[1]) 
 		stack.append(step)
 		curNode = curNode.parent
 		solutionNodes += 1
 
 	# Print path from root to goal
 	while stack:
-		print stack.pop()
+		outputFO.write(stack.pop() + "\n")
 
 	global nodesExpanded
-	outputFO.write("nodes expanded: " + str(nodesExpanded))
-	outputFO.write("nodes in solution: " + str(solutionNodes))
+	outputFO.write("nodes expanded: " + str(nodesExpanded) + "\n")
+	outputFO.write("nodes in solution: " + str(solutionNodes) + "\n")
 
 
 #############################################################
@@ -94,14 +117,15 @@ def computeNextState(action, state):
 		newState[0].append(1)	
 		newState[1].append(0)
 
-	# Verify a valid state. i.e. If there are chickens on the bank. 
-	# The number of wolves must be  < the number of chickens
-	if (state[0][1] > 0 and state[0][1] > state[0][0]) or (state[1][1] > 1 and state[1][1] > state[1][0]):
-		return None
 	# verify positive values
-	elif state[0][0] < 0 or state[0][1] < 0 or state[1][0] < 0 or state[1][1] < 0:
+	if any(n < 0 for n in newState[0]) or any(n < 0 for n in newState[1]):
 		return None
 
+	# Verify a valid state. i.e. If there are chickens on the bank. 
+	# The number of wolves must be  < the number of chickens
+	if (newState[0][0] > 0 and newState[0][1] > newState[0][0]) or (newState[1][0] > 0 and newState[1][1] > newState[1][0]):
+		return None
+	
 	# Good state. Return it
 	return newState
 	
@@ -156,39 +180,46 @@ def main():
 
 	# Open files
 	try:
-		# Start state. e.g [['3','3','1'], [ '0','0','0']]		
+		# Start state. e.g [[3, 3, 1], [0, 0, 0]]		
 		startFO = open(args[1], "r")
-		startLeftBank = startFO.readline()
-		startRightBank = startFO.readline()
+		startLeftBank = startFO.readline().strip('\n')
+		startRightBank = startFO.readline().strip('\n')
 		startState = [[int(e) for e in startLeftBank.replace(',','')], [int(i) for i in startRightBank.replace(',','')]]
-
-		# Goal state. e.g [[ '0','0','0'], ['3','3','1']]
+		root = Node(None, startState, 0, 0, None)
+		startFO.close()
+		
+		# Goal state. e.g [[0, 0, 0], [3, 3, 1]]
 		goalFO = open(args[2], "r")
-		goalLeftBank = goalFO.readline()
-		goalRightBank = goalFO.readline()
+		goalLeftBank = goalFO.readline().strip('\n')
+		goalRightBank = goalFO.readline().strip('\n')
 		goalState = [[int(e) for e in goalLeftBank.replace(',','')], [int(i) for i in goalRightBank.replace(',','')]]
-
+		goalFO.close()
+		
 		mode = args[3]
 		outputFO = open(args[4], "w")
-	except:
+	except e:
+		print e
 		print("Error on opening a file. Make sure that the file names are correct")
 		return
 	
 	# Call respective search functions
+	found = True
 	if(mode == "bfs"):
-		executeBFS(startFO, goalFO, outputFO)
+		found = executeBFS(root, goalState, outputFO)
 	elif(mode == "dfs"):
-		executeDFS(startFO, goalFO, outputFO)
+		found = executeDFS(root, goalState, outputFO)
 	elif(mode == "iddfs"):
-		executeIDDFS(startFO, goalFO, outputFO)
+		found = executeIDDFS(root, goalState, outputFO)
 	elif(mode == "astar"):
-		executeASTAR(startFO, goalFO, outputFO)
+		found = executeASTAR(root, goalState, outputFO)
 	else:
 		print(mode + " is an invalid mode, try bfs, dfs, iddfs, astar")
+	# if no solution found
+	if not found:
+		outputFO.write("nodes expanded: " + str(nodesExpanded) + "\n")
+		outputFO.write("no solution found" + "\n") 
 
-	# Close files
-	startFO.close()
-	goalFO.close()
+	# Close file
 	outputFO.close()
 
 if __name__ == "__main__":
