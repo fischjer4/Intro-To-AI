@@ -20,13 +20,16 @@ class Node:
 		self.depth = depth
 		self.action = action
 
-
+##################################################
+#	Debugging function used to print the fringe
+##################################################
 def printF(f):
 	a = list(f)
 	while a:
 		print a.pop().state
 	print
 	print 
+	
 ##################################################
 #	Attempts to solve the problem using BFS search
 #	Returns True if solution found
@@ -37,7 +40,7 @@ def executeBFS(root, goalState, outputFO):
 	fringe = []
 	for succ in expand(root):
 		fringe.insert(0, succ)
-
+	
 	while True:
 		# if fringe is empty
 		if not fringe:
@@ -94,6 +97,9 @@ def solution(node, outputFO):
 	# Print path from root to goal
 	while stack:
 		outputFO.write(stack.pop() + "\n")
+
+	# -1 because we don't count the goal node
+	solutionNodes -= 1
 
 	global nodesExpanded
 	outputFO.write("nodes expanded: " + str(nodesExpanded) + "\n")
@@ -184,7 +190,7 @@ def main():
 		startFO = open(args[1], "r")
 		startLeftBank = startFO.readline().strip('\n')
 		startRightBank = startFO.readline().strip('\n')
-		startState = [[int(e) for e in startLeftBank.replace(',','')], [int(i) for i in startRightBank.replace(',','')]]
+		startState = [[int(e) for e in startLeftBank.split(',')], [int(i) for i in startRightBank.split(',')]]
 		root = Node(None, startState, 0, 0, None)
 		startFO.close()
 		
@@ -192,7 +198,7 @@ def main():
 		goalFO = open(args[2], "r")
 		goalLeftBank = goalFO.readline().strip('\n')
 		goalRightBank = goalFO.readline().strip('\n')
-		goalState = [[int(e) for e in goalLeftBank.replace(',','')], [int(i) for i in goalRightBank.replace(',','')]]
+		goalState = [[int(e) for e in goalLeftBank.split(',')], [int(i) for i in goalRightBank.split(',')]]
 		goalFO.close()
 		
 		mode = args[3]
