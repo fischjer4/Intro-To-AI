@@ -30,3 +30,6 @@ The mode argument is either:
 - dfs (for depth-first search)
 - iddfs (for iterative deepening depth-first search)
 - astar (for A-Star search below)
+
+# Example Run
+`python source.py testStart1.txt testGoal1.txt bfs /dev/stdout`

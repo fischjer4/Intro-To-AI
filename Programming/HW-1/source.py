@@ -60,7 +60,25 @@ def executeBFS(root, goalState, outputFO):
 #	Attempts to solve the problem using DFS search
 ##################################################
 def executeDFS(root, goalState, outputFO):
-	pass
+	closed = []
+	fringe = []
+	for succ in expand(root):
+		fringe.append(succ)
+	
+	while True:
+		# if fringe is empty
+		if not fringe:
+			return False
+		curNode = fringe.pop()
+		if curNode.state == goalState:
+			solution(curNode, outputFO)
+			return True
+		if curNode.state not in closed:
+			global nodesExpanded
+			nodesExpanded += 1
+			closed.append(curNode.state)
+			for succ in expand(curNode):
+				fringe.append(succ)
 
 
 #################################################
