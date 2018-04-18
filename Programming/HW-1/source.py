@@ -38,8 +38,7 @@ def printF(f):
 def executeBFS(root, goalState, outputFO):
 	closed = []
 	fringe = []
-	for succ in expand(root):
-		fringe.insert(0, succ)
+	fringe.append(root)
 	
 	while True:
 		# if fringe is empty
