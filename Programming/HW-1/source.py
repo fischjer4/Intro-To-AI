@@ -62,8 +62,7 @@ def executeBFS(root, goalState, outputFO):
 def executeDFS(root, goalState, outputFO):
 	closed = []
 	fringe = []
-	for succ in expand(root):
-		fringe.append(succ)
+	fringe.append(root)
 	
 	while True:
 		# if fringe is empty
@@ -86,8 +85,38 @@ def executeDFS(root, goalState, outputFO):
 # 	Deepening DFS search
 #################################################
 def executeIDDFS(root, goalState, outputFO):
-	pass
+	maxDepth = 0
+	lastClosed = None
+	while True:
+		closed = []
+		fringe = []
+		fringe.append(root)		
 
+		while True:
+			# if fringe is empty
+			if not fringe:
+				# if the closed from last run is the same
+				# as this run, then we explored nothing new
+				# meaning we have visited everything and no solution
+				if(lastClosed == closed):
+					return False
+				else:
+					# Save the lastClosed set
+					lastClosed = closed
+					break
+			curNode = fringe.pop()
+			if curNode.state == goalState:
+				solution(curNode, outputFO)
+				return True
+			# only expand node if it is less than max depth and not already visited
+			if curNode.depth != maxDepth and curNode.state not in closed:
+				global nodesExpanded
+				nodesExpanded += 1
+				closed.append(curNode.state)
+				for succ in expand(curNode):
+					fringe.append(succ)
+		maxDepth += 1
+			
 
 #################################################
 #	Attempts to solve the problem using A* search
