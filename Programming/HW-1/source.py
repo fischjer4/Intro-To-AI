@@ -2,6 +2,7 @@ import sys
 
 # Global Vars
 nodesExpanded = 0
+iddfsMaxDepth = 500
 
 
 ########################################################
@@ -19,6 +20,28 @@ class Node:
 		self.pathCost = pathCost
 		self.depth = depth
 		self.action = action
+
+########################################################
+#	A Min heap/Priority Queue that is implemented using 
+# 	heapq. The class's push function takes in a Node and 
+# 	uses the Node's pathcost as the value. Meaning, the 
+# 	Nodes position in the PQ is dependent on the pathCost
+#	SOURCE: https://stackoverflow.com/a/8875823/6505563
+########################################################
+class PriorityQueue(object):
+   def __init__(self, initial=None, key=lambda x:x):
+       self.key = key
+       if initial:
+           self._data = [(key(node.pathCost), node) for node in initial]
+           heapq.heapify(self._data)
+       else:
+           self._data = []
+
+   def push(self, node):
+       heapq.heappush(self._data, (self.key(node.pathCost), node))
+
+   def pop(self):
+       return heapq.heappop(self._data)[1]
 
 ##################################################
 #	Debugging function used to print the fringe
@@ -84,8 +107,9 @@ def executeDFS(root, goalState, outputFO):
 # 	Deepening DFS search
 #################################################
 def executeIDDFS(root, goalState, outputFO):
+	global iddfsMaxDepth
 	maxDepth = 0
-	lastClosed = None
+
 	while True:
 		closed = []
 		fringe = []
@@ -97,18 +121,16 @@ def executeIDDFS(root, goalState, outputFO):
 				# if the closed from last run is the same
 				# as this run, then we explored nothing new
 				# meaning we have visited everything and no solution
-				if(lastClosed == closed):
+				if(maxDepth >= iddfsMaxDepth):
 					return False
 				else:
-					# Save the lastClosed set
-					lastClosed = closed
 					break
 			curNode = fringe.pop()
 			if curNode.state == goalState:
 				solution(curNode, outputFO)
 				return True
 			# only expand node if it is less than max depth and not already visited
-			if curNode.depth != maxDepth and curNode.state not in closed:
+			if curNode.depth < maxDepth and curNode.state not in closed:
 				global nodesExpanded
 				nodesExpanded += 1
 				closed.append(curNode.state)
@@ -140,16 +162,21 @@ def solution(node, outputFO):
 		curNode = curNode.parent
 		solutionNodes += 1
 
-	# Print path from root to goal
-	while stack:
-		outputFO.write(stack.pop() + "\n")
 
 	# -1 because we don't count the goal node
 	solutionNodes -= 1
 
 	global nodesExpanded
+	print "nodes expanded: " + str(nodesExpanded)
+	print "nodes in solution: " + str(solutionNodes)
 	outputFO.write("nodes expanded: " + str(nodesExpanded) + "\n")
 	outputFO.write("nodes in solution: " + str(solutionNodes) + "\n")
+
+	# Print path from root to goal
+	while stack:
+		top = stack.pop()
+		print top
+		outputFO.write(top + "\n")
 
 
 #############################################################
@@ -273,6 +300,8 @@ def main():
 		print(mode + " is an invalid mode, try bfs, dfs, iddfs, astar")
 	# if no solution found
 	if not found:
+		print "nodes expanded: " + str(nodesExpanded)
+		print "no solution found"
 		outputFO.write("nodes expanded: " + str(nodesExpanded) + "\n")
 		outputFO.write("no solution found" + "\n") 
 
