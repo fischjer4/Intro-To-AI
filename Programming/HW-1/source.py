@@ -150,7 +150,6 @@ def executeIDDFS(root, goalState, outputFO):
 # N = Total animals on starting bank given all start on that bank
 # H(n) = (n-1) + (n-2)	
 def heuristic(state):
-	# [[1,1,1],[2,2,0]]
 	numAnimals = state[1][0] + state[1][1]
 	hn = (numAnimals - 1) + (numAnimals - 2)
 
