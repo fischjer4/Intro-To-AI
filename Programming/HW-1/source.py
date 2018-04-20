@@ -31,19 +31,21 @@ class Node:
 #	SOURCE: https://stackoverflow.com/a/8875823/6505563
 ########################################################
 class PriorityQueue(object):
-   def __init__(self, initial=None, key=lambda x:x):
-       self.key = key
-       if initial:
-           self._data = [(key(node.pathCost), node) for node in initial]
-           heapq.heapify(self._data)
-       else:
-           self._data = []
-
-   def push(self, node):
-       heapq.heappush(self._data, (self.key(node.pathCost), node))
-
-   def pop(self):
-       return heapq.heappop(self._data)[1]
+	def __init__(self, initial=None, key=lambda x:x):
+		self.key = key
+		if initial:
+			self._data = [(key(node.pathCost), node) for node in initial]
+			heapq.heapify(self._data)
+		else:
+			self._data = []
+	def push(self, node):
+		heapq.heappush(self._data, (self.key(node.pathCost), node))
+	
+	def pop(self):
+		return heapq.heappop(self._data)[1]
+	
+	def empty(self):
+		return len(self._data) > 0
 
 ##################################################
 #	Debugging function used to print the fringe
@@ -171,7 +173,7 @@ def executeASTAR(root, goalState, outputFO):
 
 		while True:
 			# if fringe is empty
-			if not fringe:
+			if not fringe.empty():
 				# if the closed from last run is the same
 				# as this run, then we explored nothing new
 				# meaning we have visited everything and no solution
