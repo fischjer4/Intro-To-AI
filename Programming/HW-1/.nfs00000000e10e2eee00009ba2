@@ -3,7 +3,7 @@ import heapq
 
 # Global Vars
 nodesExpanded = 0
-iddfsMaxDepth = 1500
+iddfsMaxDepth = 500
 astarMaxPath  = 1000
 
 
@@ -31,21 +31,19 @@ class Node:
 #	SOURCE: https://stackoverflow.com/a/8875823/6505563
 ########################################################
 class PriorityQueue(object):
-	def __init__(self, initial=None, key=lambda x:x):
-		self.key = key
-		if initial:
-			self._data = [(key(node.pathCost), node) for node in initial]
-			heapq.heapify(self._data)
-		else:
-			self._data = []
-	def push(self, node):
-		heapq.heappush(self._data, (self.key(node.pathCost), node))
-	
-	def pop(self):
-		return heapq.heappop(self._data)[1]
-	
-	def empty(self):
-		return len(self._data) > 0
+   def __init__(self, initial=None, key=lambda x:x):
+       self.key = key
+       if initial:
+           self._data = [(key(node.pathCost), node) for node in initial]
+           heapq.heapify(self._data)
+       else:
+           self._data = []
+
+   def push(self, node):
+       heapq.heappush(self._data, (self.key(node.pathCost), node))
+
+   def pop(self):
+       return heapq.heappop(self._data)[1]
 
 ##################################################
 #	Debugging function used to print the fringe
@@ -148,10 +146,11 @@ def executeIDDFS(root, goalState, outputFO):
 
 # 2,2,1.     1,1,0
 # N = Total animals on starting bank given all start on that bank
-# H(n) = 2*(n-2) + 1 = 2*n - 3	
+# H(n) = (n-1) + (n-2)	
 def heuristic(state):
+	# [[1,1,1],[2,2,0]]
 	numAnimals = state[1][0] + state[1][1]
-	hn = 2*numAnimals - 3
+	hn = (numAnimals - 1) + (numAnimals - 2)
 
 	if state[0][2]:
 		hn + 1
@@ -172,7 +171,7 @@ def executeASTAR(root, goalState, outputFO):
 
 		while True:
 			# if fringe is empty
-			if not fringe.empty():
+			if not fringe:
 				# if the closed from last run is the same
 				# as this run, then we explored nothing new
 				# meaning we have visited everything and no solution
@@ -318,7 +317,7 @@ def main():
 		startLeftBank = startFO.readline().strip('\n')
 		startRightBank = startFO.readline().strip('\n')
 		startState = [[int(e) for e in startLeftBank.split(',')], [int(i) for i in startRightBank.split(',')]]
-		root = Node(None, startState, heuristic(startState), 0, None)
+		root = Node(None, startState, 0, 0, None)
 		startFO.close()
 		
 		# Goal state. e.g [[0, 0, 0], [3, 3, 1]]
