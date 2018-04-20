@@ -142,13 +142,17 @@ def executeIDDFS(root, goalState, outputFO):
 					fringe.append(succ)
 		maxDepth += 1
 
-# Remove condition of #Chickens >= #Wolves on bank, 
-# and then best possible way to move all over to 
-# other bank, with having to bring an animal back is
+#################################################
+#	Heuristic function for  A* search
+# 	Remove condition of #Chickens >= #Wolves on bank, 
+# 	and then best possible way to move all over to 
+# 	other bank, with having to bring an animal back is
+#
+# 	2,2,1.     1,1,0
+# 	N = Total animals on starting bank
+# 	H(n) = 2*(n-2) + 1 = 2*n - 3	
+#################################################
 
-# 2,2,1.     1,1,0
-# N = Total animals on starting bank given all start on that bank
-# H(n) = 2*(n-2) + 1 = 2*n - 3	
 def heuristic(state):
 	numAnimals = state[1][0] + state[1][1]
 	hn = 2*numAnimals - 3

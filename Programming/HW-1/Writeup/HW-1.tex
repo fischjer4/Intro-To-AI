@@ -4,6 +4,17 @@
 \usepackage[section]{placeins}
 \usepackage{caption}
 
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+
+\urlstyle{same}
+
+
 \usepackage{amssymb}                                         
 \usepackage{amsmath}                                         
 \usepackage{amsthm}                                
@@ -121,17 +132,56 @@
 	\subsection{Breadth First Search}
 	The BFS searching algorithm will expand every single node in the tree level by level until we reach the goal state. Starting at the root, after visiting one node, this algorithm will append all of its neighbor nodes to the end of the list and will not continue to the next level of the tree until every neighbor node has been visited. To implement this, we can use a First In First Out (FIFO) queue. Thus, the first node in the queue will be expanded first.
 	
+	We tested our solution by running a set of test start states and test goal states.
+	When running the tests, we printed out the \textit{action} and \textit{result} from the \textit{expand} function, and verified that the correct nodes being expanded were in a FIFO order. 
+	Then, we verified that the solution's output was correct by making sure the number of wolves was less than or equal to the number of chickens (if present) on a given bank, and trying the solution on the \href{https://scratch.mit.edu/projects/55981236/}{website} given in the assignment page.
+	
+	\begin{center}
+	\textbf{Test Cases}
+	
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\textbf{Starting Left Bank} & \textbf{Starting Right Bank} & \textbf{Goal Left Bank} & \textbf{Goal Right Bank} \\ \hline
+		
+		0,0,0 & 3,3,1 & 3,3,1 & 0,0,0 \\ \hline	
+		0,0,0 & 9,8,1 & 9,8,1 & 0,0,0 \\ \hline
+		0,0,0 & 100,95,1 & 100,95,1 & 0,0,0 \\ \hline
+\end{tabular}
+\end{center}
+
 	\subsection{Depth First Search}
 	The DFS searching function is implemented very similarly to the BFS, but instead of adding the neighbor nodes to the end of the queue, they are added to the front. Therefore, this algorithm will go as far as possible along each branch before backtracking. To implement this, we can use a Last In First Out (LIFO) queue. Thus, it will continue to explore one path until a terminal.
-
+	
+	We tested DFS the same way we tested BFS.
+	That is, print out the \textit{action} and \textit{result} pairs generated from a node sent to the expand function and verify that they are the correct next node for the fringe. 
+	Verify the number of wolves is less than the number of chickens on a given bank, and test the solution on the website application shared on the assignment page.
+	
+	
     \subsection{Iterative Deepening Depth First Search}
-    The IDDFS will start at the root node and repeatedly applies depth first searching with increasing depth limits until the goal is found. We set the maximum depth to 1500 so it will return false, meaning no solution is found once it hits the max depth limit. This limit is set to ensure the program will not run too long before it ends up with a final decision.
+    The IDDFS will start at the root node and repeatedly applies depth first searching with increasing depth limits until the goal is found. We set the maximum depth to 1500. Meaning, no solution is found once the current depth hits the maximum depth limit. This limit is set to ensure the program will not run too long before it ends up with a final decision.
 
-	
+	We tested IDDFS the same way we tested the above algorithms:
+	\begin{itemize}
+		\item Print out the \textit{action} and \textit{result} pairs generated from a node sent to the expand function and verify that they are the correct next node for the fringe.
+		
+		\item Verify the number of wolves is less than the number of chickens on a given ban
+		
+		\item Test the solution on the website application shared on the assignment page.
+	\end{itemize}
+
 	\subsection{A-Star Search}
-	For the A-Star Search, we first made a heuristic function, H(n) = 2*(n-2) + 1 = 2n - 3. Suppose there are n animals on the right bank of the river. Then we will need at least 2 moves to move the first (n-2) animals to the left side of the bank and another move to take the rest two animals. Therefore, the optimal path will need at least 2*(n-2) + 1 = 2n - 3 moves to reach our goal. Thus, we set our heuristic function to be H(n) = 2n - 3 to calculate the least number of moves that we need based on the number of animals on the right bank. For the rest of this searching algorithm, we use the priority queue to pop the node that has the shortest path cost and expand until we reach the goal.  
+	For the A-Star Search, we first made a heuristic function, \textit{H(n) = 2*(n-2) + 1 = 2n - 3}, where \textit{n} is the number of animals on the starting bank. We came to this heuristic function by the following thought proccess: if we abstract away the restriction of the number of wolves on the bank must be less than or equal to the number of chickens, then the fastest we could move all animals from the starting bank to the other bank is by moving the maximum amount of animals the boat can hold from the starting bank to the other bank, bringing one back, and repeating. This led us to the heuristic function of \textit{H(n) = 2*(n-2) + 1 = 2n - 3} where \textit{n} is the number of animals on the starting bank.
+	We tested our function by commenting out the line of code that enforces the restriction where the number of wolves must be less than or equal to the number of chickens, and verified that the \textit{nodes in solution} was equal to what our function predicted.
+	The fringe is a minimum priority queue. So, the node that has the shortest path cost will be expanded next.
 	
-	
+	We tested A* the same way we tested the above algorithms:
+	\begin{itemize}
+		\item Print out the \textit{action} and \textit{result} pairs generated from a node sent to the expand function and verify that they are the correct next node for the fringe.
+		
+		\item Verify the number of wolves is less than the number of chickens on a given ban
+		
+		\item Test the solution on the website application shared on the assignment page.
+	\end{itemize}
 	
 	
 	\section{Results}
@@ -154,14 +204,15 @@
 	
 	\section{Discussion}
 	From the table above, we notice that all four searching algorithms give the same solution path number for the first two tests. In addition, BFS, DFS, and A-Star out performed IDDFS as the nodes expanded are a lot less than the ones in IDDFS. 
-    \indent IDDFS took a very long time on the larger data set (both test 2 and test 3), even though it found the best solution it expanded 713088 nodes which is much more than any other algorithm.
-
+    \indent IDDFS took a very long time on the larger data sets (both test 2 and test 3). Even though it found the best solution it expanded 713088 nodes in test 3, which is much more than any other algorithm.
+	
+	We were surprised by how well A-Star search worked. It was fast and efficient. It is also interesting to think that A-Star search could have performed worse or better depending on the heuristic used, where the other algorithms don't need that sort of "thinking".
 	
 	
 	
 	
 	\section{Conclusion}
-	Among the 4 algorithms, theoretically the A-star search will perform the best, if given a perfect heuristic function. However, there is no such algorithm that can solve everything. BFS is fast and is guaranteed to find a solution, but it takes more memory. DFS saves memory but will not always gives the right answer. IDDFS will provide a optimal path but is much slower. In conclusion, every searching algorithm has its own pros and cons, but we decide to choose A-Star. 
+	Among the 4 algorithms, theoretically the A-star search will perform the best, if given a perfect heuristic function. However, there is no such algorithm that can solve everything. BFS is fast and is guaranteed to find a solution if there is one, but it takes more memory. DFS saves memory but will not always give the optimal answer. IDDFS will provide an optimal path but is much slower. In conclusion, every searching algorithm has its own pros and cons, but we decided a A-Star was the best to use. 
     
 	
 	
