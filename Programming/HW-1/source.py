@@ -137,7 +137,23 @@ def executeIDDFS(root, goalState, outputFO):
 				for succ in expand(curNode):
 					fringe.append(succ)
 		maxDepth += 1
-			
+
+# Remove condition of #Chickens >= #Wolves on bank, 
+# and then best possible way to move all over to 
+# other bank, with having to bring an animal back is
+
+# 2,2,1.     1,1,0
+# N = Total animals on starting bank given all start on that bank
+# H(n) = (n-1) + (n-2)	
+def heuristic(state):
+	# [[1,1,1],[2,2,0]]
+	numAnimals = state[1][0] + state[1][1]
+	hn = (numAnimals - 1) + (numAnimals - 2)
+
+	if state[0][2]:
+		hn + 1
+
+	return hn
 
 #################################################
 #	Attempts to solve the problem using A* search
@@ -242,7 +258,7 @@ def expand(node):
 	for action, result in successorFN(node):
 		# pathcost of new node may need to be (node.pathCost + StepCost(newNode))
 		# where StepCost() evaluates the cost. i.e. if the cost isn't uniformly 1
-		newNode = Node(node, result, node.pathCost + 1, node.depth + 1, action)
+		newNode = Node(node, result, (node.depth + 1 + heuristic(result)) , node.depth + 1, action)
 		successors.append(newNode)
 
 	return successors
