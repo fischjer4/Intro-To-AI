@@ -1,8 +1,10 @@
 import sys
+import heapq
 
 # Global Vars
 nodesExpanded = 0
 iddfsMaxDepth = 500
+astarMaxPath  = 1000
 
 
 ########################################################
@@ -159,7 +161,37 @@ def heuristic(state):
 #	Attempts to solve the problem using A* search
 #################################################
 def executeASTAR(root, goalState, outputFO):
-	pass
+	global astarMaxPath
+	maxDepth = 0
+
+	while True:
+		closed = []
+		fringe = PriorityQueue()
+		fringe.push(root)		
+
+		while True:
+			# if fringe is empty
+			if not fringe:
+				# if the closed from last run is the same
+				# as this run, then we explored nothing new
+				# meaning we have visited everything and no solution
+				if(maxDepth >= astarMaxPath):
+					return False
+				else:
+					break
+			curNode = fringe.pop()
+			if curNode.state == goalState:
+				solution(curNode, outputFO)
+				return True
+			# only expand node if it is less than max depth and not already visited
+			if curNode.pathCost < maxDepth and curNode.state not in closed:
+				global nodesExpanded
+				nodesExpanded += 1
+				closed.append(curNode.state)
+				for succ in expand(curNode):
+					fringe.push(succ)
+		maxDepth += 1
+
 
 
 #############################################################
