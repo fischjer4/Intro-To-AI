@@ -319,7 +319,7 @@ def main():
 		startLeftBank = startFO.readline().strip('\n')
 		startRightBank = startFO.readline().strip('\n')
 		startState = [[int(e) for e in startLeftBank.split(',')], [int(i) for i in startRightBank.split(',')]]
-		root = Node(None, startState, 0, 0, None)
+		root = Node(None, startState, heuristic(startState), 0, None)
 		startFO.close()
 		
 		# Goal state. e.g [[0, 0, 0], [3, 3, 1]]
