@@ -29,6 +29,15 @@ MinimaxPlayer* MinimaxPlayer::clone() {
 }
 
 /*********************************************************************************
+	* frees the boards that were created from successor function
+**********************************************************************************/
+void MinimaxPlayer::freeBoards(vector<ActionStateTup> &succs){
+	for(int i = 0; i < succs.size(); i++){
+		if(succs[i].board != NULL)
+			delete succs[i].board;
+	}
+}
+/*********************************************************************************
 	* returns a vector of next possible boards after valid moves by 'player'
 **********************************************************************************/
 vector<ActionStateTup> MinimaxPlayer::successor(OthelloBoard *board, char player){
@@ -69,6 +78,7 @@ ActionStateTup MinimaxPlayer::maxValue(ActionStateTup value, char maxPlayer, cha
 			value.col = itr->col;
 		}
 	}
+	freeBoards(succs);	
 
 	return value;
 }
@@ -94,6 +104,7 @@ ActionStateTup MinimaxPlayer::minValue(ActionStateTup value, char maxPlayer, cha
 			value.col = itr->col;
 		}
 	}
+	freeBoards(succs);
 
 	return value;
 }

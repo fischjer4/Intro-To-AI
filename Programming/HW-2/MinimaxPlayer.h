@@ -13,7 +13,11 @@
 #include <vector>
 
 
-
+/*********************************************************************************
+	* Book keeping struct. Stores the utility of the terminal node (or the
+	  chosen utility of child if non-nerminal node), the (row,col) move it 
+	  took to get there, and the state of the board.
+**********************************************************************************/
 struct ActionStateTup{
 	float util;
 	int row;
@@ -51,7 +55,7 @@ public:
      * This is a virtual copy constructor
      */
     MinimaxPlayer* clone();
-	
+	void freeBoards(std::vector<ActionStateTup> &succs);
 	ActionStateTup maxValue(ActionStateTup value, char maxPlayer, char minPlayer);
 	ActionStateTup minValue(ActionStateTup value, char maxPlayer, char minPlayer);
 	std::vector<ActionStateTup> successor(OthelloBoard *board, char player);
