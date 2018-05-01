@@ -1,6 +1,9 @@
 #Added by MacOS
 .DS_Store
 
+#Added by visual code
+.vscode
+
 #Written HW
 Written/
 
