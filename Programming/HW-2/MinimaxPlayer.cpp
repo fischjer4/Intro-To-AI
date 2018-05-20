@@ -139,6 +139,7 @@ float MinimaxPlayer::utility(OthelloBoard* board){
 	* Returns true if computer has no more valid moves 
 **********************************************************************************/
 bool MinimaxPlayer::terminal_test(OthelloBoard *board){
-	return !board->has_legal_moves_remaining(this->get_symbol());
+	return !(board->has_legal_moves_remaining(board->get_p1_symbol())
+			 && board->has_legal_moves_remaining(board->get_p2_symbol()));
 }
 
