@@ -2,12 +2,32 @@ import sys
 import string
 import re
 
-class NaiveBayes(object):
-    """docstring for NaiveBayes."""
-    def __init__(self):
-        super(NaiveBayes, self).__init__()
-        self.vocabulary = list()
-        self.features = list()
+
+class BayesData(object):
+    """docstring for BayesData."""
+    def __init__(self, vocabulary=None, features=None):
+        super(BayesData, self).__init__()
+        self.vocabulary = vocabulary if vocabulary is not None else list()
+        self.features = features if features is not None else list()
+
+
+    #############################################################
+    # Prints the data comma seperated to a files
+    # Data is a list []
+    #############################################################
+    def printToFile(self, fileName):
+        try:
+            fp = open(str(fileName), "w")
+            commaSeperated = ','.join(self.vocabulary)
+            fp.write(commaSeperated + ",classlabel\n")
+
+            for vector in self.features:
+                # turn all numbers in the vector to strings via map()
+                commaSeperated = ','.join(map(str,vector))
+                fp.write(commaSeperated+ "\n")
+        except:
+            print("Error opening file named " + str(fileName) + " for writing")
+            return
 
     #############################################################
     # Strips all punctuation, special characters, and numbers
@@ -61,6 +81,7 @@ class NaiveBayes(object):
         # class label is the last element in feature vector
         newVector.append(classLabel)
         return newVector
+
     #############################################################
     # Given a file pointer, for each line in the file createFeatures()
     #  adds converts it to a feature vector then adds it to the list of
@@ -74,6 +95,10 @@ class NaiveBayes(object):
             self.features.append(self.createFeatureVector(line))
 
 
+class NaiveBayes(BayesData):
+    """docstring for NaiveBayes."""
+    def __init__(self, vocabulary, features):
+        super(NaiveBayes, self).__init__(vocabulary, features)
 
 
 
@@ -117,11 +142,18 @@ def main():
         trainingFO = open("training_text.txt", "r")
         testFO = open("test_text.txt", "r")
 
-    # Start Classifying
-    bayes = NaiveBayes()
-    bayes.createVocab(trainingFO)
-    bayes.createFeatures(trainingFO)
 
+    # Start Pre-Processing
+    trainingData = BayesData()
+    trainingData.createVocab(trainingFO)
+    trainingData.createFeatures(trainingFO)
+    trainingData.printToFile("preprocessed_train.txt")
+
+    testData = BayesData(trainingData.vocabulary)
+    trainingData.createFeatures(testFO)
+    trainingData.printToFile("preprocessed_test.txt")
+
+    # Start Classifying
 
 
     trainingFO.close()
