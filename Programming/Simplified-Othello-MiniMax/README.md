@@ -11,7 +11,7 @@ The specific things you need to implement for this assignment are:
 - __Utility Function__: The 4x4 version of Othello is small enough that we can generate the entire game tree while doing the Minimax search. As a result, you do not need to create an evaluation function for non-terminal nodes. You will, however, need to create a utility function that determines the "goodness" of a terminal state. You will need to create this utility function on your own. When creating the utility function, remember that the player that moves first is assumed to be the maximizing player.
 - __Successor Function__: You will also need to create a successor function. This function takes the current state of the game and generates all the successors that can be reached within one move of the current state.
 
-- __Minimax Function__: You will need to implement the Minimax-Decision, Max-Value and Min-Value functions.
+- __Minimax Function__: You will need to implement the Minimax-Decision, Max-Value and Min-Value functions. 
 
 In addition to the functionality described above, you may need to implement some other code to do things like bookkeeping.
 
