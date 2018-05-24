@@ -10,7 +10,9 @@ The goal of sentiment analysis is to determine the writer's attitude toward the 
 You will be given two files in the same format. They are _trainingSet.txt_ and _testSet.txt_. These files consist of sentences in the following format:
 
 __Best restaurant ever.   1__
+
 __Worst restaurant ever.   0__
+
 In general, the format of a line is "some text", "\t" (tab), classlabel. Note that the text may contain arbitrary punctuation.
 
 
@@ -26,7 +28,9 @@ This step converts each sentence into a feature vector plus a class label that i
 4. Output the pre-processed training and testing data to two files called preprocessed_train.txt and preprocessed_test.txt. The first line should contain the alphabetized words in the vocabulary, separated by commas, followed by a dummy non-word called "classlabel". The lines that follow the vocabulary words should be the featurized versions of the sentences in the training data, with the features separated by commas. Your file should look something like:
 
 aardvark,almost,anticipate,...,classlabel
+
 0,1,0,...,0
+
 1,0,1,...,1
 
 Note that even though we are asking you to output the training data, the classification step should happen right after the pre-processing step (just pass the preprocessed data directly to your classifier. Don't save it out and reload it back in).
@@ -35,7 +39,9 @@ Note that even though we are asking you to output the training data, the classif
 Build a naive Bayes classifier as described in class.
 
 1. In the training phase, the naive Bayes classifier reads in the training data along with the training labels and learns the parameters used by the classifier
+
 2. In the testing phase, the trained naive Bayes classifier classifies the data in the testSet.txt data file. Use the preprocessed data you generated above.
+
 3. Output the accuracy of the naive Bayes classifier by comparing the predicted class label of each sentence in the test data to the actual class label. The accuracy is the number of correct predictions divided by the total number of predictions.
 
 You may output extra data (e.g. confusion matrices, incorrectly classified sentences) if you think it makes your program's performance more clear, but we should be able to immediately identify and read the accuracy in your output without effort.
