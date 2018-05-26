@@ -20,7 +20,7 @@ class BayesData(object):
     # Prints the data comma seperated to a files
     # Data is a list []
     #############################################################
-    def printToFile(self, fileName):
+    def printFeatsToFile(self, fileName):
         try:
             fp = open(str(fileName), "w")
             commaSeperated = ','.join(self.vocabulary)
@@ -30,6 +30,7 @@ class BayesData(object):
                 # turn all numbers in the vector to strings via map()
                 commaSeperated = ','.join(map(str,vector))
                 fp.write(commaSeperated+ "\n")
+            fp.close()
         except:
             print("Error opening file named " + str(fileName) + " for writing")
             return
@@ -164,12 +165,24 @@ class NaiveBayes(object):
         # Now that we have the (#featureVectors with vocabword=1 AND classLabel=1)
         #  and classLabelSet{} has (#featureVectors where classLabel=1),
         #  add dichlet priors and compute P(vocabWord | classLabel)
+        # Values must be casted to float, cuz python2 doesn't do float
+        #  division by default, meaning domain error in math.log() if it
+        #  were to be 0
         for word, values in self.labelIsPositive.items():
-            values["isPresent"] = math.log2( (values["isPresent"] + 1) / (self.classLabelSet[1] + 2) )
-            values["notPresent"] = math.log2( (values["notPresent"] + 1) / (self.classLabelSet[1] + 2) )
+            denom = float(self.classLabelSet[1] + 2)
+            presNumerator = float(values["isPresent"] + 1)
+            notPresNumerator = float(values["notPresent"] + 1)
+
+            values["isPresent"] = math.log( presNumerator / denom, 2 )
+            values["notPresent"] = math.log( notPresNumerator / denom, 2 )
+
         for word, values in self.labelIsNegative.items():
-            values["isPresent"] = math.log2( (values["isPresent"] + 1) / (self.classLabelSet[0] + 2) )
-            values["notPresent"] = math.log2( (values["notPresent"] + 1) / (self.classLabelSet[0] + 2) )
+            denom = float(self.classLabelSet[0] + 2)
+            presNumerator = float(values["isPresent"] + 1)
+            notPresNumerator = float(values["notPresent"] + 1)
+
+            values["isPresent"] = math.log( presNumerator / denom, 2 )
+            values["notPresent"] = math.log( notPresNumerator / denom, 2 )
 
 
 
@@ -191,8 +204,8 @@ class NaiveBayes(object):
                 sumLabelNegative += self.labelIsNegative[vocabWord]["notPresent"]
 
         totalVectors = self.classLabelSet[0] + self.classLabelSet[1]
-        probabilityPos = math.log2(self.classLabelSet[1]/totalVectors) + sumLabelPositive
-        probabilityNeg = math.log2(self.classLabelSet[0]/totalVectors) + sumLabelNegative
+        probabilityPos = math.log(float(self.classLabelSet[1]) / float(totalVectors), 2) + sumLabelPositive
+        probabilityNeg = math.log(float(self.classLabelSet[0]) / float(totalVectors), 2) + sumLabelNegative
         return [ probabilityNeg, probabilityPos ]
 
     def predictAllTestFeatures(self, testFeatures):
@@ -204,9 +217,27 @@ class NaiveBayes(object):
             prediction = 1 if result[1] > result[0] else 0
             if prediction == featureVector[-1]:
                 numCorrectlyPredicted += 1
+        accuracy = str((float(numCorrectlyPredicted) / float(totalNumPredictions)) * 100)
+        print("Accuracy: " + str(accuracy))
+        return accuracy
 
-        print("Accuracy: " + str((numCorrectlyPredicted / totalNumPredictions) * 100))
-
+    #############################################################
+    # Prints the data comma seperated to a files
+    # Data is a list []
+    #############################################################
+    def printResultsToFile(self, result, trainingName, testingName, fileName, append=False):
+        try:
+            if append:
+                fp = open(str(fileName), "a+")
+            else:
+                fp = open(str(fileName), "w")
+            fp.write("Training File: " + str(trainingName) + "\n")
+            fp.write("Testing File: " + str(testingName) + "\n")
+            fp.write("Accuracy: " + str(result) + "\n\n")
+            fp.close()
+        except:
+            print("Error opening file named " + str(fileName) + " for writing")
+            return
 
 
 
@@ -245,16 +276,21 @@ def main():
     trainingData = BayesData()
     trainingData.createVocab(trainingFO)
     trainingData.createFeatures(trainingFO)
-    trainingData.printToFile("preprocessed_train.txt")
+    trainingData.printFeatsToFile("preprocessed_train.txt")
 
     testData = BayesData(trainingData.vocabulary)
     testData.createFeatures(testFO)
-    testData.printToFile("preprocessed_test.txt")
+    testData.printFeatsToFile("preprocessed_test.txt")
 
     # Start Classifying
     bayes = NaiveBayes(trainingData.vocabulary, trainingData.features)
-    bayes.predictAllTestFeatures(trainingData.features)
-    bayes.predictAllTestFeatures(testData.features)
+    result = bayes.predictAllTestFeatures(trainingData.features)
+    bayes.printResultsToFile(result, trainingFO.name, trainingFO.name, "results.txt")
+
+    result = bayes.predictAllTestFeatures(testData.features)
+    bayes.printResultsToFile(result, trainingFO.name, testFO.name, "results.txt", True)
+
+
 
     trainingFO.close()
     testFO.close()
