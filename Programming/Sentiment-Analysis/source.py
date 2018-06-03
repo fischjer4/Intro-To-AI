@@ -6,14 +6,14 @@ import re
 #############################################################
 # Class to create bayes data. That is, the vocabulary and
 #  the feature vectors. This is done by sending a file object
-#  to createVocab(), and then to createFeatures()
+#  to createVocab(), and then to createFeatureVecs()
 #############################################################
 class BayesData(object):
     """docstring for BayesData."""
     def __init__(self, vocabulary=None, features=None):
         super(BayesData, self).__init__()
         self.vocabulary = vocabulary if vocabulary is not None else list()
-        self.features = features if features is not None else list()
+        self.featureVecs = features if features is not None else list()
 
 
     #############################################################
@@ -26,7 +26,7 @@ class BayesData(object):
             commaSeperated = ','.join(self.vocabulary)
             fp.write(commaSeperated + ",classlabel\n")
 
-            for vector in self.features:
+            for vector in self.featureVecs:
                 # turn all numbers in the vector to strings via map()
                 commaSeperated = ','.join(map(str,vector))
                 fp.write(commaSeperated+ "\n")
@@ -89,16 +89,16 @@ class BayesData(object):
         return newVector
 
     #############################################################
-    # Given a file pointer, for each line in the file createFeatures()
+    # Given a file pointer, for each line in the file createFeatureVecs()
     #  adds converts it to a feature vector then adds it to the list of
     #  feature vectores
     #############################################################
-    def createFeatures(self, fp):
+    def createFeatureVecs(self, fp):
         # make sure at beginning of file
         fp.seek(0, 0)
         self.vocabulary.sort()
         for line in fp:
-            self.features.append(self.createFeatureVector(line))
+            self.featureVecs.append(self.createFeatureVector(line))
 
 
 
@@ -108,17 +108,17 @@ class BayesData(object):
 #############################################################
 # Class is inherited from BayesData. It must be given a
 #  vocabulary which is a list of strings, and the
-#  trainedFeatures, which is a list of 1's and 0's where a 1
+#  trainedFeatureVecs, which is a list of 1's and 0's where a 1
 #  means the vocabWord at vocab[i] is in the training document.
 # NaiveBayes creates a naive bayes net and the conditional
 #  probability tables based off of the trained features
 #############################################################
 class NaiveBayes(object):
     """docstring for NaiveBayes."""
-    def __init__(self, vocabulary, trainedFeatures):
+    def __init__(self, vocabulary, trainedFeatureVecs):
         super(NaiveBayes, self).__init__()
         self.vocabulary = vocabulary if vocabulary is not None else list()
-        self.features = trainedFeatures if trainedFeatures is not None else list()
+        self.featureVecs = trainedFeatureVecs if trainedFeatureVecs is not None else list()
 
         # used to hold the number of features with classLabel X
         self.classLabelSet = {0: 0, 1: 0}
@@ -143,7 +143,7 @@ class NaiveBayes(object):
     #           (#featureVectors where classLabel=1) + 2
     #############################################################
     def createPropabilities(self):
-        for fVector in self.features:
+        for fVector in self.featureVecs:
             # add one to the count for this class label
             if fVector[-1] == 1 or fVector[-1] == 0:
                 self.classLabelSet[fVector[-1]] += 1
@@ -208,6 +208,11 @@ class NaiveBayes(object):
         probabilityNeg = math.log(float(self.classLabelSet[0]) / float(totalVectors), 2) + sumLabelNegative
         return [ probabilityNeg, probabilityPos ]
 
+    #############################################################
+    # Runs through each feature vecor in testFeatures and predicts
+    #  whether the sentiment is positive or negative and reports
+    #  the accuracy
+    #############################################################
     def predictAllTestFeatures(self, testFeatures):
         numCorrectlyPredicted = 0
         totalNumPredictions = len(testFeatures)
@@ -222,8 +227,7 @@ class NaiveBayes(object):
         return accuracy
 
     #############################################################
-    # Prints the data comma seperated to a files
-    # Data is a list []
+    # Prints results to a file
     #############################################################
     def printResultsToFile(self, result, trainingName, testingName, fileName, append=False):
         try:
@@ -275,19 +279,19 @@ def main():
     # Start Pre-Processing
     trainingData = BayesData()
     trainingData.createVocab(trainingFO)
-    trainingData.createFeatures(trainingFO)
+    trainingData.createFeatureVecs(trainingFO)
     trainingData.printFeatsToFile("preprocessed_train.txt")
 
     testData = BayesData(trainingData.vocabulary)
-    testData.createFeatures(testFO)
+    testData.createFeatureVecs(testFO)
     testData.printFeatsToFile("preprocessed_test.txt")
 
     # Start Classifying
-    bayes = NaiveBayes(trainingData.vocabulary, trainingData.features)
-    result = bayes.predictAllTestFeatures(trainingData.features)
+    bayes = NaiveBayes(trainingData.vocabulary, trainingData.featureVecs)
+    result = bayes.predictAllTestFeatures(trainingData.featureVecs)
     bayes.printResultsToFile(result, trainingFO.name, trainingFO.name, "results.txt")
 
-    result = bayes.predictAllTestFeatures(testData.features)
+    result = bayes.predictAllTestFeatures(testData.featureVecs)
     bayes.printResultsToFile(result, trainingFO.name, testFO.name, "results.txt", True)
 
 

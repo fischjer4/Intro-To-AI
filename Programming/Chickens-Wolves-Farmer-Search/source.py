@@ -226,8 +226,26 @@ def solution(node, outputFO):
 	outputFO.write("nodes in solution: " + str(solutionNodes) + "\n")
 
 	# Print path from root to goal
+	last = None
+	bank = 1
 	while stack:
 		top = stack.pop()
+		# if last is not None and top != last:
+			# if bank == 0:
+			# 	if int(top[0]) != int(last[0]):
+			# 		print str(abs(int(top[0]) - int(last[0]))) + " chickens    ",
+			# 	if int(top[1]) != int(last[1]):
+			# 		print str(abs(int(top[1]) - int(last[1]))) + " wolves"
+			# 	else:
+			# 		print
+			# else:
+			# 	if int(top[4]) != int(last[4]):
+			# 		print str(abs(int(top[0]) - int(last[0]))) + " chickens    ",
+			# 	if int(top[5]) != int(last[5]):
+			# 		print str(abs(int(top[5]) - int(last[5]))) + " wolves"
+			# 	else:
+			# 		print
+		# last = top
 		print top
 		outputFO.write(top + "\n")
 
